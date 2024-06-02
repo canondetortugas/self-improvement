@@ -1,0 +1,181 @@
+% \documentclass[11pt]{article}
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2020
+
+ 
+% ready for submission
+% \usepackage{neurips_2020}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2020}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2020}
+
+% to avoid loading the natbib package, add option nonatbib:
+%     \usepackage[nonatbib]{neurips_2020}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+%\usepackage{hyperref}       % hyperlinks 
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+
+\usepackage{tocloft}            % TOC spacing
+
+%\usepackage{txfont}
+
+\usepackage{enumitem}
+
+\usepackage{breakcites}
+
+\usepackage{etoolbox}
+\usepackage{comment}
+\newtoggle{draft}
+\togglefalse{draft}
+\newcommand{\draft}[1]{\iftoggle{draft}{#1}{}}
+
+
+% \mathscr
+\usepackage{mathrsfs}
+
+\usepackage{algorithm}
+\usepackage{verbatim}
+\usepackage[noend]{algpseudocode}
+\newcommand{\multiline}[1]{\parbox[t]{\dimexpr\linewidth-\algorithmicindent}{#1}}
+
+\usepackage{multicol}
+
+\usepackage{colortbl}
+
+\usepackage{setspace}
+
+\usepackage{transparent}
+
+\usepackage{inconsolata}
+\usepackage[scaled=.90]{helvet}
+%\usepackage{fontspec}
+% \usepackage{helvet}
+\usepackage{xspace}
+
+\usepackage{pifont}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\usepackage{bm}
+\newcommand{\x}{\bm{x}}
+
+% \usepackage{eufrak}
+% \usepackage{fontspec,unicode-math}
+% \setmathfont[range=\mathfrak]{Old English Text MT}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Better looking lowercase mathfrak
+% https://tex.stackexchange.com/questions/398710/alternative-separate-font-to-mathfrak-for-small-letters
+
+\DeclareFontFamily{U}{jkpmia}{}
+\DeclareFontShape{U}{jkpmia}{m}{it}{<->s*jkpmia}{}
+\DeclareFontShape{U}{jkpmia}{bx}{it}{<->s*jkpbmia}{}
+\DeclareMathAlphabet{\mathfrak}{U}{jkpmia}{m}{it}
+\SetMathAlphabet{\mathfrak}{bold}{U}{jkpmia}{bx}{it}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{arxiv_style}
+\input{dylan}
+\input{macros}
+\let\underbar\undefined
+\input{widebar}
+
+% \let\openbox\relax
+% \usepackage{pxfonts}
+% \let\openbox\relax
+% \usepackage{txfonts}
+
+
+\usepackage{color-edits}
+ % \usepackage[suppress]{color-edits}
+ \addauthor{df}{ForestGreen}
+ \newcommand{\dfc}[1]{\dfcomment{#1}}
+
+ % \usepackage{showlabels}
+
+ % \usepackage[cut]{thmbox}
+
+% \input{theorembox}
+ 
+
+
+  % Indent option for \Statex
+\makeatletter
+\let\OldStatex\Statex
+\renewcommand{\Statex}[1][3]{%
+  \setlength\@tempdima{\algorithmicindent}%
+  \OldStatex\hskip\dimexpr#1\@tempdima\relax}
+\makeatother
+
+% \let\vec\undefined
+ \usepackage{accents}
+ \newcommand{\ubar}[1]{\underaccent{\bar}{#1}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\let\oldparagraph\paragraph
+\newcommand{\paragraphi}[1]{\oldparagraph{\emph{#1}.}}
+\renewcommand{\paragraph}[1]{\oldparagraph{#1.}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ \newcommand{\Unif}{\mathsf{Unif}}
+
+\newcommand{\phistar}{\phi^{\star}}
+\newcommand{\gstar}{g^{\star}}
+
+\newcommand{\meet}{\wedge} 
+\newcommand{\nn}{\nonumber}
+
+\renewcommand{\dagger}{\texttt{DAGGER}\xspace}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\title{}
+%\title{The Power of Generative Models: Beyond Linear Function Approximation}
+% \title{Bridging the Imitation Gap}
+% \title{Rethinking the Imitation Gap: \\The Power of Parameter Sharing in
+%   Imitation Learning}
+% \title{Revisiting Online versus Offline Imitation Learning}
+\title{Self-Improvement and Bootstrapping}
+\author{%
+%
+}
+
+
+\date{}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+
+
+\bibliography{refs} 
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
