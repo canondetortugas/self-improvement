@@ -168,31 +168,104 @@
 Consider the following setup. The true model is $\pistar:\cX\to\Delta(\cY)$. We
 initially receive $n$ samples $\cD=\crl*{(x,y)}$ where $x\sim\rho$ and
 $y\sim\pistar$, and we fit $\pi\ind{1}
-=\argmax_{\pi\in\Pi}\Eh\brk*{\log\pi(y\mid{}x)}$. We then repeatedly
-do the following:
+=\argmax_{\pi\in\Pi}\Eh\brk*{\log\pi(y\mid{}x)}$. We can consider
+various self-training protocols
 \begin{itemize}
-\item Generate a dataset $\cD\ind{t}=\crl*{(x,y)}$ of samples with
-  $x\sim\rho$ and $y\sim\pi\ind{t}$.
-\item Define
-  \begin{align}
-    \label{eq:self_training}
-    \pi\ind{t+1}=\argmax\crl*{
+\item \textbf{Regularized maximum likelihood}. We repeatedly do the following:
+  \begin{itemize}
+  \item Generate a dataset $\cD\ind{t}=\crl*{(x,y)}$ of samples with
+    $x\sim\rho$ and $y\sim\pi\ind{t}$.
+  \item Define
+    \begin{align}
+      \label{eq:regularized_mle}
+      \pi\ind{t+1}=\argmax\crl*{
       \Eh_{\cD\ind{t}}\brk*{\log\pi(y\mid{}x)}
       -\beta\Dkl{\pi}{\pi\ind{t}}
       }.
-  \end{align}
-\end{itemize}
-\paragraph{Questions and comments}
-We know that with no statistical or optimization errors, this
-  should converge to
+    \end{align}
+  \end{itemize}
+  From first-order conditions, the maximizer here should satisfy
   \[
-    \pi\ind{t+1}(y\mid{}x)\propto{}\pistar(y\mid{}x)^{1+\beta{}T}
+    \frac{\pi\ind{t}(y\mid{}x)}{\pi(y\mid{}x)}
+    =     \beta\log\frac{\pi(y\mid{}x)}{\pi\ind{t}(y\mid{}x)}  + \lambda,
   \]
-  \dfc{Check this!}
+  where $\lambda\in\bbR$ is a Lagrange multiplier.
+
+A version that has nicer first-order conditions (not sure if there's a
+closed form yet) is
+    \begin{align}
+      \label{eq:regularized_mle_chi}
+      \pi\ind{t+1}=\argmax\crl*{
+      \Eh_{\cD\ind{t}}\brk*{\log\pi(y\mid{}x)}
+      -\frac{\beta}{2}\Dchis{\pi}{\pi\ind{t}}
+      }.
+    \end{align}
+This gives $\pi\ind{t}(y\mid{}x)^2 = \beta\pi^2(y\mid{}x) +
+2\lambda\pi(y\mid{}x)\pi\ind{t}(y\mid{}x)$ for a Lagrange multiplier
+$\lambda\in\bbR$. Solving the quadratic equation then gives
+$\pi = \pi\ind{t}\cdot(\pm\sqrt{\lambda^2+\beta^2}-\lambda)/\beta$,
+and setting $\lambda$ so that this normalizes to $1$ just gives $\pi\ind{t+1}=\pi\ind{t}$.
+\item \textbf{Reverse maximum likelihood (Akshay's objective)}.
+  We repeatedly do the following:
+  \begin{itemize}
+  \item Generate a dataset $\cD\ind{t}=\crl*{(x,y)}$ of samples with
+    $x\sim\rho$ and $y\sim\pi\ind{t}$.
+  \item Define
+    \begin{align}
+      \label{eq:self_training}
+      \pi\ind{t+1}=\argmax\crl*{
+      \En_{\pi}\brk*{\log\pi\ind{t}(y\mid{}x)}
+      -\beta\Dkl{\pi}{\pi\ind{t}}
+      }.
+    \end{align}
+  \end{itemize}
+  With no errors, this converges to
+  \[
+    \pi\ind{t+1}(y\mid{}x)\propto{}\pistar(y\mid{}x)^{(1+\beta^{-1})^{T}}.
+  \]
+Here's an observation: If we define the entropy as
+$H(\pi)=-\En_{x\sim\rho{},y\sim\pi}\brk*{\log\pi(y\mid{}x)}$, when
+$\grad_{\pi}H=-\log(\pi(\cdot\mid{}\cdot)) + \mb{1}$. Hence, we can
+interpret \cref{eq:self_training} as doing exponentiated gradient
+\emph{ascent} on the convex objective
+\[
+R(\pi) = -H(\pi).
+\]
+That is, this is an instance of non-concave maximization, but the
+local optimum is the argmax policy $\argmax_{y}\pistar(y\mid{}x)$.
+  
+  \item \textbf{Regularized maximum likelihood with reverse-KL regularization}. We repeatedly do the following:
+  \begin{itemize}
+  \item Generate a dataset $\cD\ind{t}=\crl*{(x,y)}$ of samples with
+    $x\sim\rho$ and $y\sim\pi\ind{t}$.
+  \item Define
+    \begin{align}
+      \label{eq:regularized_mle_reverse}
+      \pi\ind{t+1}=\argmax\crl*{
+      \Eh_{\cD\ind{t}}\brk*{\log\pi(y\mid{}x)}
+      -\beta\Dkl{\pi\ind{t}}{\pi}
+      }.
+    \end{align}
+  \end{itemize}
+  \dfc{This is equivalent to just
+    $\argmax_{\pi}(1+\beta)\En_{\pi\ind{t}}\brk*{\log\pi(y\mid{}x)}$,
+    which means $\beta$ has no effect. Probably not the best choice}
+\end{itemize}
+\cref{eq:regularized_mle} is kind of like iterative SFT with
+pseudo-labels, whereas \cref{eq:self_training} is closer to iterative
+RLHF with pseudo-labels.
+\paragraph{Questions and comments}
+We know that with no statistical or optimization errors, the estimator
+in \cref{eq:self_training} should converge to
+  \[
+    \pi\ind{t+1}(y\mid{}x)\propto{}\pistar(y\mid{}x)^{(1+\beta^{-1})^{T}}
+  \]
+  % \dfc{Check this!}
   Questions:
 \begin{itemize}
 \item When can we achieve similar convergence in the presence of
-  statistical errors?
+  statistical errors? E.g., what are the tradeoffs for choosing $\beta$?
+\item What are the different tradeoffs for \cref{eq:regularized_mle,eq:self_training,eq:regularized_mle_reverse}?
 \item Is this purely a computational phenomenon?
   \begin{itemize}
   \item Concretely: Is $\pi\ind{t+1}$ ever better statistically than
@@ -236,7 +309,69 @@ We know that with no statistical or optimization errors, this
   \cref{eq:self_training} to work out?
 \end{itemize}
 
-\subsection{Special case: Multi-Armed Bandits}
+\subsection{Finite-Sample Analysis}
+
+\begin{comment}
+  Here we focus on the bandit special case where $\cX=\emptyset$ and
+  $\Pi=\Delta(\cY)$. In this case, the population version of
+  \cref{eq:self_training} is given by
+  \[
+    \pi\ind{t+1}=\argmin\crl*{\Dkl{\pi\ind{t}}{\pi} +
+      \beta\Dkl{\pi}{\pi\ind{t}}}.
+  \]
+\end{comment}
+
+To-do list:
+\begin{itemize}
+\item Exponential weights-type analysis:
+  \begin{itemize}
+  \item Re-do exp-weights analysis on the objective, but:
+    \begin{itemize}
+    \item Do the contextual case and handle noise coming from
+      contexts. Try to do hellinger stuff and get the fast rate? 
+    \item Handle the case where we solve the Exp Weights objective
+      using ERM (do the case above first).
+    \end{itemize}
+    \item Applying the result to entropy:
+      \begin{itemize}
+      \item Try to get a fast rate for minimizing entropy from
+        this guarantee.
+      \item Try to directly get a descent lemma for minimizing entropy
+        (don't need to go through the full OL analysis).
+        \begin{itemize}
+        \item This gives parameter convergence, which may be useful
+          for other things we want to do.
+        \end{itemize}
+    \end{itemize}
+  \end{itemize}
+\item Showing convergence to argmax:
+  \begin{itemize}
+  \item Focus on the case where $\Pi$ is parameterized via softmax
+    policies to start.
+  \item Is there a way to directly derive this from the exp
+    
+    weights/regret-type reasoning above?
+  \item Possible idea: Try to argue that we're converging to argmax
+    policy in KL/TV distance (via descent lemma-type reasoning?)
+  \item Focus on CB case with general $f$ class---vanilla bandit is
+    too easy, but this is rich enough to be interesting.
+    \begin{itemize}
+    \item Idea: Argue that if $\fstar$ has a uniform margin,
+      $\fhat\ind{1}$ also has a uniform margin on most $x$s. Then try
+      to directly use properties of exp weights updates to argue that
+      each update preserves the margin on most $x$s?
+    \end{itemize}
+  \item Seems like optimization view might be useful here: Argue that
+    argmax policy is a local optima, then argue that we converge to it
+    in TV? 
+  \item Perhaps the easiest way to import the optimization view is to
+    handle the CB case, but where $\Pi$ is all possible
+    policies. Still have stat errors, but not entirely non-trivial? Or
+    maybe it is since we are basically doing the bandit case pointwise
+    when $n\gg\log\abs{\Pi}$.
+  \end{itemize}
+\end{itemize}
+
 
 \section{IGW Question}
 Consider the contextual bandits
