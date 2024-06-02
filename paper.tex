@@ -208,6 +208,10 @@ We know that with no statistical or optimization errors, this
     have statistical benefits, because it allows us to leverage the
     unlabeled examples $x$s.
   \end{itemize}
+\item Presumably we need some kind of margin condition to ensure that
+  \cref{eq:self_training} actually converges to argmax instead of
+  noise. This is most easy to think about when $\pistar$ is itself a
+  softmax policy.
 \item Suppose $\pi\ind{1}$ is an LLM with temperature parameter
   $\eta$. We have $y=y_{1:H}$, and
   $\pi(y_h\mid{}x,y_{1:h-1})\propto\exp\prn*{\frac{f(x,y_{1:h})}{\eta}}$. A
@@ -218,7 +222,10 @@ We know that with no statistical or optimization errors, this
   necessarily equivalent to the sequence-level argmax.
   \begin{itemize}
   \item Hence, we might hope that self-training can improve over this
-    baseline, even if it can't improve over the true sequence-level argmax.
+    baseline, even if it can't improve over the true sequence-level
+    argmax.
+  \item Good example to think about above: $f=\Qstarb$ is the soft
+    Q-function for a given reward function $r$.
   \end{itemize}
 \item In reality, we will not be able to evaluate the KL term in
   \cref{eq:self_training} exactly, due to statistical errors. Does the
