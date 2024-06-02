@@ -151,11 +151,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %\title{}
-%\title{The Power of Generative Models: Beyond Linear Function Approximation}
-% \title{Bridging the Imitation Gap}
-% \title{Rethinking the Imitation Gap: \\The Power of Parameter Sharing in
-%   Imitation Learning}
-% \title{Revisiting Online versus Offline Imitation Learning}
 \title{Self-Improvement and Bootstrapping}
 \author{%
 %
@@ -169,6 +164,90 @@
 
 \tableofcontents
 
+\section{Basic self-improvement setup}
+Consider the following setup. The true model is $\pistar:\cX\to\Delta(\cY)$. We
+initially receive $n$ samples $\cD=\crl*{(x,y)}$ where $x\sim\rho$ and
+$y\sim\pistar$, and we fit $\pi\ind{1}
+=\argmax_{\pi\in\Pi}\Eh\brk*{\log\pi(y\mid{}x)}$. We then repeatedly
+do the following:
+\begin{itemize}
+\item Generate a dataset $\cD\ind{t}=\crl*{(x,y)}$ of samples with
+  $x\sim\rho$ and $y\sim\pi\ind{t}$.
+\item Define
+  \begin{align}
+    \label{eq:self_training}
+    \pi\ind{t+1}=\argmax\crl*{
+      \Eh_{\cD\ind{t}}\brk*{\log\pi(y\mid{}x)}
+      -\beta\Dkl{\pi}{\pi\ind{t}}
+      }.
+  \end{align}
+\end{itemize}
+\paragraph{Questions and comments}
+We know that with no statistical or optimization errors, this
+  should converge to
+  \[
+    \pi\ind{t+1}(y\mid{}x)\propto{}\pistar(y\mid{}x)^{1+\beta{}T}
+  \]
+  \dfc{Check this!}
+  Questions:
+\begin{itemize}
+\item When can we achieve similar convergence in the presence of
+  statistical errors?
+\item Is this purely a computational phenomenon?
+  \begin{itemize}
+  \item Concretely: Is $\pi\ind{t+1}$ ever better statistically than
+    computing the sequence-level argmax
+    $\argmax_{y}\pi\ind{1}(y\mid{}x)$? If not, then we want to argue
+    that the benefit is that we are competing with the sequence level
+    argmax without having to actually compute it (that is, given a new
+    $x$, we just need to sample $y\sim{}\pi\ind{t+1}(y\mid{}x)$.
+    \begin{itemize}
+    \item This would be a sort of ``optimization vs sampling'' phenomenon.
+    \end{itemize}
+  \item Alternatively, we might be able to argue that our algo *does*
+    have statistical benefits, because it allows us to leverage the
+    unlabeled examples $x$s.
+  \end{itemize}
+\item Suppose $\pi\ind{1}$ is an LLM with temperature parameter
+  $\eta$. We have $y=y_{1:H}$, and
+  $\pi(y_h\mid{}x,y_{1:h-1})\propto\exp\prn*{\frac{f(x,y_{1:h})}{\eta}}$. A
+  good baseline for us is to set $\eta\to{}0$ after training. In this
+  case, sampling autoregressively is the same as choosing the greedy
+  argmax at each step $h$,
+  i.e. $y_h=\argmax{}\pi(y_h\mid{}x,y_{1:h-1})$, but is not
+  necessarily equivalent to the sequence-level argmax.
+  \begin{itemize}
+  \item Hence, we might hope that self-training can improve over this
+    baseline, even if it can't improve over the true sequence-level argmax.
+  \end{itemize}
+\item In reality, we will not be able to evaluate the KL term in
+  \cref{eq:self_training} exactly, due to statistical errors. Does the
+  objective still work when we have statistical errors on this term?
+  Moreover, can we reduce the optimization to a sequence of linear
+  opt/policy opt-style problems via frank-wolfe?
+\item What realizability assumptions do we actually need in order for
+  \cref{eq:self_training} to work out?
+\end{itemize}
+
+\subsection{Special case: Multi-Armed Bandits}
+
+\section{IGW Question}
+Consider the contextual bandits
+Suppose we solve the following optimization problem:
+\[
+  \pihat=\argmax_{\pi\in\Pi}\crl*{
+    \Eh\brk*{r} - \beta\Dkl{\piref}{\pi}}.
+\]
+For a fixed choice of $\piref$, this is equivalent to generalized IGW
+(``SmoothIGW''), and leads to guarantees that scale with
+$\nrm*{\frac{\pistar}{\piref}}$. Suppose instead we do the following
+process iteratively:
+\[
+  \pi\ind{t+1}=\argmax_{\pi\in\Pi}\crl*{
+    \Eh\brk*{r} - \beta\Dkl{\pi\ind{t}}{\pi}}.
+\]
+Can we show that this leads to guarantees that scale with the
+coverability parameter for the class $\Pi$?
 
 
 \bibliography{refs} 
