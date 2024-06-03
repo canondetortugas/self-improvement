@@ -254,7 +254,7 @@ local optimum is the argmax policy $\argmax_{y}\pistar(y\mid{}x)$.
 \cref{eq:regularized_mle} is kind of like iterative SFT with
 pseudo-labels, whereas \cref{eq:self_training} is closer to iterative
 RLHF with pseudo-labels.
-\paragraph{Questions and comments}
+\subsection{Questions and comments}
 We know that with no statistical or optimization errors, the estimator
 in \cref{eq:self_training} should converge to
   \[
@@ -309,18 +309,7 @@ in \cref{eq:self_training} should converge to
   \cref{eq:self_training} to work out?
 \end{itemize}
 
-\subsection{Finite-Sample Analysis}
-
-\begin{comment}
-  Here we focus on the bandit special case where $\cX=\emptyset$ and
-  $\Pi=\Delta(\cY)$. In this case, the population version of
-  \cref{eq:self_training} is given by
-  \[
-    \pi\ind{t+1}=\argmin\crl*{\Dkl{\pi\ind{t}}{\pi} +
-      \beta\Dkl{\pi}{\pi\ind{t}}}.
-  \]
-\end{comment}
-
+\subsection{To-do list}
 To-do list:
 \begin{itemize}
 \item Exponential weights-type analysis:
@@ -371,6 +360,28 @@ To-do list:
     when $n\gg\log\abs{\Pi}$.
   \end{itemize}
 \end{itemize}
+
+\section{Finite-Sample Analysis}
+
+\dfc{Plan for basic analysis
+  \begin{itemize}
+  \item Work out the best version of gradient dominance condition.
+  \item Assume above holds uniformly for all $x$ at initialization.
+  \item Argue that this is preserved whp at each iteration.
+  \item Do the exp weights analysis, accounting for statistical error
+    at each update step and generalization analysis (possibly unboundedness?).
+  \end{itemize}
+  Open problems for better analysis:
+  \begin{itemize}
+  \item Strong convexity-type approach? seems like linear convergence
+    must be possible.
+  \end{itemize}
+  }
+
+\subsection{Gradient Dominance}
+
+\subsection{Exponential Weights}
+
 
 
 \section{IGW Question}
