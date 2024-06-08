@@ -309,7 +309,292 @@ in \cref{eq:self_training} should converge to
   \cref{eq:self_training} to work out?
 \end{itemize}
 
-\subsection{To-do list}
+\section{Finite-Sample Analysis}
+
+\dfc{
+  \begin{itemize}
+  \item Gradient dominance
+  \item Best-of-k baseline. Also, explain what margin condition
+    entails for softmax.
+  \item Exp weights and convergence?
+    \begin{itemize}
+    \item Interesting idea: Assume $\veps$-apx update even though we
+      have no statistical errors.
+    \item Reducing objective to linear optimization via frank-wolfe?
+    \end{itemize}
+  \end{itemize}
+  }
+
+  \subsection{Non-Contextual Case}
+  \newcommand{\sm}{\alpha}
+  \newcommand{\ystar}{y^{\star}}
+  \newcommand{\ones}{\mb{1}}
+In this section, we analyze \cref{eq:self_training} in the
+non-contextual case where $\cX=\emptyset$. Let a parameter
+$\sm\in\brk{0,1}$ and policy $\piref$ be given. We consider the following smoothed version
+of the update in \cref{eq:self_training}:
+\begin{align}
+  \pi\ind{t+1}=\argmax_{\pi}\crl*{
+  \En_{\pi}\brk*{\log\prn*{(1-\alpha)\pi\ind{t}(y)+\alpha\piref(y)}}
+  -\beta\Dkl{\pi}{\pi\ind{t}}
+  }.
+\end{align}
+To make things more interesting, we consider the following inexact
+update. Defining
+\[
+\Psi\ind{t} =   \En_{\pi}\brk*{\log\prn*{(1-\alpha)\pi\ind{t}(y)+\alpha\piref(y)}}
+  -\beta\Dkl{\pi}{\pi\ind{t}},
+\]
+we assume that
+\begin{align}
+  \label{eq:pit}
+\Psi\ind{t}(\pi\ind{t+1})\geq{}\max_{\pi}\Psi\ind{t}(\pi) - \veps
+\end{align}
+for some $\veps\geq{}0$.
+\begin{assumption} We assume that:
+  \begin{itemize}
+  \item For all $t$, $\pi\ind{t}\in\Pi$ for some known class $\Pi$.
+  \item All $\pi\in\Pi$ satisfy $\nrm*{\frac{\pi}{\piref}}_{\infty}\leq{}\Cconc$.
+  \end{itemize}
+  
+\end{assumption}
+
+\begin{theorem}
+  \label{thm:bandit}
+  
+\end{theorem}
+
+\begin{proof}[\pfref{thm:bandit}]
+  Define the smoothed entropy via
+  \begin{align}
+    \label{eq:smoothed_entropy}
+    H_\alpha(\pi) = (1-\alpha)^{-1}H((1-\alpha)\pi+\alpha\piref),
+  \end{align}
+  where $H(\pi)\ldef{}\sum_{y}\pi(y)\log\prn*{\frac{1}{\pi(y)}}$.
+  \begin{lemma}
+    \label{lem:entropy_gradient}
+    We have that
+    $\grad{}H_\alpha(\pi) =
+      -\prn*{\log((1-\alpha)\pi(\cdot)+\alpha\piref(\cdot)) + \ones}$.
+    \end{lemma}
+    The following result will be the starting point for our analysis.
+    \begin{lemma}
+      \label{lem:first_order}
+      For all $\pistar$, we have that
+      \begin{align*}
+        \beta^{-1}\tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t+1}-\pistar}
+        \leq{} \Dkl{\pistar}{\pi\ind{t}}
+  - \Dkl{\pistar}{\pi\ind{t+1}}
+  - \Dkl{\pi\ind{t+1}}{\pi\ind{t}} + \beta^{-1}\veps.
+      \end{align*}
+    \end{lemma}
+    Let $\pibar\ind{t}\ldef{}(1-\alpha)\pi\ind{t}+\alpha\piref$. Let
+    $\ystar\ldef{}\argmax_{y\in\cY}\pibar\ind{1}(y)$. We
+    assume that for some $\gamma<1$,
+    \begin{align*}
+      \pibar\ind{1}(\ystar)\geq{}(\pibar\ind{1}(y))^{\gamma}\quad\forall{}y\neq\ystar.
+    \end{align*}
+    Our goal is to prove inductively that for all $t\in\brk{T}$,
+    \dfc{conditions on lr and error}
+    \begin{align}
+      \label{eq:ind1}
+      \pibar\ind{t}(\ystar)\geq{}(\pibar\ind{t}(y))^{\gamma}\quad\forall{}y\neq\ystar,
+        \end{align}
+        and
+        \begin{align}
+          \label{eq:ind2}
+          \dfc{TBD}
+        \end{align}
+        \paragraph{Inductive step}
+        Let $t\in\brk{T}$ be fixed, and assume that
+        $\pi\ind{1},\dots,\pi\ind{t}$ satisfy
+        \cref{eq:ind1,eq:ind2}. Our goal will be to show that
+        $\pi\ind{t+1}$ satisfies the same property. If we set
+        $\pistar=e_{\ystar}$, then rearranging
+        \cref{lem:first_order} implies that
+        \begin{align*}
+          \log\prn*{
+          \frac{\pi\ind{t}(\ystar)}{\pi\ind{t+1}(\ystar)}
+          }
+          &= \Dkl{\pistar}{\pi\ind{t+1}}-\Dkl{\pistar}{\pi\ind{t}}\\
+            &\leq{}
+          -\beta^{-1}\tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t+1}-\pistar}
+              - \Dkl{\pistar}{\pi\ind{t+1}} + \beta^{-1}\veps\\
+          &=
+            -\beta^{-1}\tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t}-\pistar}
+            + \beta^{-1}\tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t}-\pi\ind{t+1}}
+          - \Dkl{\pistar}{\pi\ind{t+1}} + \beta^{-1}\veps.
+        \end{align*}
+        We appeal to two lemmas to bound the terms on the right-hand side.
+        \begin{lemma}[Gradient dominance]
+          \label{lem:entropy_gd}
+          If $\pi\ind{t}$ satisfies \cref{eq:ind1}, then
+          \begin{align*}
+            \tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t}-e_{\ystar}}
+            \geq{}
+            \prn*{\frac{1}{\gamma}-1}\prn*{1-\pibar\ind{t}(\ystar)}\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+            - \alpha\log\prn*{\abs{\cY}\alpha^{-1}}.
+            % \prn*{\pibar\ind{t}(\ystar)  + \frac{1-\pibar\ind{t}(\ystar)}{\gamma}-1}\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}- \alpha\log\prn*{\abs{\cY}\alpha^{-1}}
+          \end{align*}
+\dfc{this gives a nontrivial lower bound even when $\gamma=1$, which
+  is slightly sus. maybe this is fine though, since a $\geq{}0$ lower
+  bound is not enough to imply a concrete rate of convergence}          
+        \end{lemma}
+        \begin{proof}[\pfref{lem:entropy_gd}]
+          Using \cref{lem:entropy_gradient}, we can write
+          \begin{align*}
+            \tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t}-e_{\ystar}}
+            &=
+              \sum_{y}\pi\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+              - \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}\\
+            &=
+              \sum_{y}\pibar\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+              - \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+              + \alpha\sum_{y}(\pi\ind{t}(y)-\piref(y))
+              \log\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
+                        &\geq
+              \sum_{y}\pibar\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+              - \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+                          -
+                          \alpha\sum_{y}\piref(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
+                                    &\geq
+              \sum_{y}\pibar\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+              - \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+                                      - \alpha\log\prn*{\abs{\cY}\alpha^{-1}},
+          \end{align*}
+          where the last line uses that
+          $\sum_{y}\piref(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+          \leq{}\log\prn*{\sum_{y}\frac{\piref(y)}{\pibar\ind{t}(y)}}\leq\log(\abs{\cY}\alpha^{-1})$.
+
+          To proceed, using \cref{eq:ind1}, we bound
+          \begin{align*}
+            \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+            =
+            \frac{1}{1-\pibar\ind{t}(\ystar)}\sum_{y\neq\ystar}\pibar\ind{t}(y)
+            \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}\\
+            \leq{}
+            \frac{1}{1-\pibar\ind{t}(\ystar)}\sum_{y\neq\ystar}\pibar\ind{t}(y)
+            \log\prn*{\frac{1}{(\pibar\ind{t}(y))^{\gamma}}}\\
+            = \frac{1}{1-\pibar\ind{t}(\ystar)}\sum_{y\neq\ystar}\pibar\ind{t}(y) \log\prn*{\frac{1}{(\pibar\ind{t}(y))^{\gamma}}}.
+          \end{align*}
+          Using this, we have that
+          \begin{align*}
+            \sum_{y}\pibar\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+            - \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+            &\geq{} \prn*{\pibar\ind{t}(\ystar)  +
+            \frac{1-\pibar\ind{t}(\ystar)}{\gamma}-1}\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}\\
+            &= \prn*{\frac{1}{\gamma}-1}\prn*{1-\pibar\ind{t}(\ystar)}\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}},
+          \end{align*}
+          which proves the result.
+
+        \end{proof}
+  
+  \end{proof}
+
+  \begin{proof}[\pfref{lem:entropy_gradient}]
+    Direct calculation.
+  \end{proof}
+  
+      \begin{proof}[\pfref{lem:first_order}]
+      Let
+      $\Phi\ind{t}(\pi)\ldef{}\tri*{\pi,\grad{}H_\alpha(\pi\ind{t})} +
+      \beta\Dkl{\pi}{\pi\ind{t}}$. Then from \cref{eq:pit}, we have
+      that
+      \[
+        \Phi\ind{t}(\pi\ind{t+1})\leq{}\min_{\pi}\Phi\ind{t}(\pi) + \veps.
+      \]
+      Since $\Phi\ind{t}$ is convex, this implies that for all
+      policies $\pistar$,
+      \begin{align}
+        \tri*{\Phi\ind{t}(\pi\ind{t+1}),\pi\ind{t+1}-\pistar}
+        \leq{} \Phi\ind{t}(\pi\ind{t+1})-\Phi\ind{t}(\pistar) \leq \veps.
+      \end{align}
+      Noting that $\Dkl{\cdot}{\cdot}$ is a Bregman divergence with
+      regularizer $\cR(\pi)\ldef{}-H(\pi)$, this implies that
+      \[
+        \tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t+1}-\pistar}
+        +
+        \beta\tri*{\grad\cR(\pi\ind{t+1})-\grad\cR(\pi\ind{t}),\pi\ind{t+1}-\pistar}
+        \leq \veps,
+      \]
+      or,
+            \[
+        \tri*{\grad{}H_\alpha(\pi\ind{t}),\pi\ind{t+1}-\pistar}
+        \leq
+        \beta\tri*{\grad\cR(\pi\ind{t})-\grad\cR(\pi\ind{t+1}),\pi\ind{t+1}-\pistar}
++ \veps.
+\]
+Finally, the Pythagorean inequality for Bregman divergences implies
+that
+\begin{align*}
+  \tri*{\grad\cR(\pi\ind{t})-\grad\cR(\pi\ind{t+1}),\pi\ind{t+1}-\pistar}
+  = \Dkl{\pistar}{\pi\ind{t}}
+  - \Dkl{\pistar}{\pi\ind{t+1}}
+  - \Dkl{\pi\ind{t+1}}{\pi\ind{t}}.
+\end{align*}
+      
+    \end{proof}
+
+
+\begin{comment}
+  \subsubsection{Gradient Dominance}
+  \newcommand{\ystar}{y^{\star}} Define the entropy for a policy $\pi$
+  via
+  \[
+    H(\pi) = \sum_{y}\pi(y)\log\prn*{\frac{1}{\pi(y)}}.
+  \]
+  Not that this function is concave with respect to $\pi$.
+  \begin{lemma}
+    \label{lem:gd_bandit}
+  
+  \end{lemma}
+  \begin{proof}[\pfref{lem:gd_bandit}]
+  
+  \end{proof}
+\end{comment}
+
+  \subsection{General Case}
+
+  \dfc{Plan for basic analysis
+  \begin{itemize}
+  \item Work out the best version of gradient dominance condition.
+  \item Assume above holds uniformly for all $x$ at initialization.
+  \item Argue that this is preserved whp at each iteration.
+  \item Do the exp weights analysis, accounting for statistical error
+    at each update step and generalization analysis (possibly unboundedness?).
+  \end{itemize}
+  Open problems for better analysis:
+  \begin{itemize}
+  \item Strong convexity-type approach? seems like linear convergence
+    must be possible.
+  \end{itemize}
+  }
+
+\subsubsection{Gradient Dominance}
+
+\subsubsection{Exponential Weights}
+
+
+
+\section{IGW Question}
+Consider the contextual bandits
+Suppose we solve the following optimization problem:
+\[
+  \pihat=\argmax_{\pi\in\Pi}\crl*{
+    \Eh\brk*{r} - \beta\Dkl{\piref}{\pi}}.
+\]
+For a fixed choice of $\piref$, this is equivalent to generalized IGW
+(``SmoothIGW''), and leads to guarantees that scale with
+$\nrm*{\frac{\pistar}{\piref}}$. Suppose instead we do the following
+process iteratively:
+\[
+  \pi\ind{t+1}=\argmax_{\pi\in\Pi}\crl*{
+    \Eh\brk*{r} - \beta\Dkl{\pi\ind{t}}{\pi}}.
+\]
+Can we show that this leads to guarantees that scale with the
+coverability parameter for the class $\Pi$?
+
+\section{To-do list}
 To-do list:
 \begin{itemize}
 \item Exponential weights-type analysis:
@@ -361,47 +646,10 @@ To-do list:
   \end{itemize}
 \end{itemize}
 
-\section{Finite-Sample Analysis}
-
-\dfc{Plan for basic analysis
-  \begin{itemize}
-  \item Work out the best version of gradient dominance condition.
-  \item Assume above holds uniformly for all $x$ at initialization.
-  \item Argue that this is preserved whp at each iteration.
-  \item Do the exp weights analysis, accounting for statistical error
-    at each update step and generalization analysis (possibly unboundedness?).
-  \end{itemize}
-  Open problems for better analysis:
-  \begin{itemize}
-  \item Strong convexity-type approach? seems like linear convergence
-    must be possible.
-  \end{itemize}
-  }
-
-\subsection{Gradient Dominance}
-
-\subsection{Exponential Weights}
-
-
-
-\section{IGW Question}
-Consider the contextual bandits
-Suppose we solve the following optimization problem:
-\[
-  \pihat=\argmax_{\pi\in\Pi}\crl*{
-    \Eh\brk*{r} - \beta\Dkl{\piref}{\pi}}.
-\]
-For a fixed choice of $\piref$, this is equivalent to generalized IGW
-(``SmoothIGW''), and leads to guarantees that scale with
-$\nrm*{\frac{\pistar}{\piref}}$. Suppose instead we do the following
-process iteratively:
-\[
-  \pi\ind{t+1}=\argmax_{\pi\in\Pi}\crl*{
-    \Eh\brk*{r} - \beta\Dkl{\pi\ind{t}}{\pi}}.
-\]
-Can we show that this leads to guarantees that scale with the
-coverability parameter for the class $\Pi$?
-
+\section{More ideas and questions}
+\begin{itemize}
+\item Can we understand/analyze SPIN from this sharpening perspective?
+\end{itemize}
 
 \bibliography{refs} 
 
