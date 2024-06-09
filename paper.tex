@@ -428,7 +428,7 @@ for some $\veps\geq{}0$.
           &= \Dkl{\pistar}{\pibar\ind{t+1}}-\Dkl{\pistar}{\pibar\ind{t}}\\
             &\leq{}
           -\beta^{-1}\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t+1}-\pistar}
-              - \Dkl{\pistar}{\pibar\ind{t+1}} + \beta^{-1}\veps'\\
+              - \Dkl{\pibar\ind{t+1}}{\pibar\ind{t}} + \beta^{-1}\veps'\\
           &=
             -\beta^{-1}\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t}-\pistar}
             + \beta^{-1}\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t}-\pibar\ind{t+1}}
@@ -466,56 +466,135 @@ $\pistar\ind{t}(y)\leq{}1/2$, this implies that
           For all $\zeta>0$,
           \begin{align*}
             \tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t}-\pibar\ind{t+1}}
-            \leq \zeta{}e^2 \log^2(\Cconc\abs{\cY}\alpha^{-1})
-            + \zeta^{-2}\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}.
+            \leq \zeta{}\cdot{}e^2 \log^2(\Cconc\abs{\cY}\alpha^{-1})
+            + \zeta^{-1}\cdot{}\min\crl*{\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}, \Dkl{\pibar\ind{t}}{\pibar\ind{t+1}}}.
           \end{align*}
         \end{lemma}
-        \begin{proof}[\pfref{lem:err_bound}]
-          We can write
-          \begin{align*}
-            \tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t}-\pibar\ind{t+1}}
-            &=
-            \sum_{y}(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))\log\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
-            &=
-\sum_{y}(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))\log\prn*{\frac{1}{\pibar\ind{t}(y)}}\cdot\frac{\sqrt{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}}{\sqrt{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}}\\
-            &\leq
-              \frac{\zeta}{2}\sum_{y}(\pibar\ind{t}(y)+\pibar\ind{t+1}(y))
-              \log^2\prn*{\frac{1}{\pibar\ind{t}(y)}}
-              +\frac{\zeta^{-1}}{2}
-              \sum_{y}\frac{(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))^2}{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}\\
-                        &\leq
-              \frac{\zeta}{2}\sum_{y}(\pibar\ind{t}(y)+\pibar\ind{t+1}(y))
-              \log^2\prn*{\frac{1}{\pibar\ind{t}(y)}}
-              +\zeta^{-1}\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}.
-          \end{align*}
-          where the last line uses that $
-          \sum_{y}\frac{(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))^2}{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}
-          \leq 2
-          \sum_{y}(\sqrt{\pibar\ind{t}(y)}-\sqrt{\pibar\ind{t+1}(y)})^2=\Dhels{\pibar\ind{t+1}}{\pibar\ind{t}}
-          \leq\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}$.
+        With this, we conclude that
+        \begin{align*}
+          \log\prn*{
+          \frac{\prn*{\pibar\ind{t}(\ystar)}^{1-\eta}}{\pibar\ind{t+1}(\ystar)}
+          }
+          \leq \beta^{-2}\underbrace{e^2 \log^2(\Cconc\abs{\cY}\alpha^{-1})}_{\rdef{}C}
+          + 
+\beta^{-1}\veps',
+        \end{align*}
+        or
+        \begin{align*}
+          \pibar\ind{t+1}(\ystar) \geq{} \prn{\pibar\ind{t}(\ystar)}^{1-\eta}\cdot{}e^{-(\beta^2C+\beta\veps')}.
+        \end{align*}
+\dfc{Idea for completing the proof: Since above holds for $\ystar$,
+  and since $\ystar$ maximizes $\pibar\ind{t}$, it should imply that
+  \cref{eq:ind1} holds for $\pibar\ind{t+1}$ as well.}
+\dfc{Note quite: Can we also show that
+  $\pibar\ind{t}(y)\geq{}c\cdot\pibar\ind{t+1}(y)$ for
+  $y\neq{}\ystar$? Then above would be sufficient.
+}
+\dfc{Possibilities:
+  \begin{itemize}
+  \item Use
+    $H(\pi\ind{t})-C\ind{t}\log\prn*{\frac{1}{\pi\ind{t}(\ystar)}}$ as
+    a potential and argue that we can
+    $H(\pi\ind{t})-C\ind{t}\log\prn*{\frac{1}{\pi\ind{t}(\ystar)}}\geq{}0$
+    for $C\ind{t}$ non-decreasing. This is implied by our condition
+    for $C\ind{t}\approx{}\gamma^{-1}$.
+    \begin{itemize}
+    \item Issue: Cannot deduce from this that $\ystar$ is argmax for
+      $\pibar\ind{t}$ early on.
+    \end{itemize}
+  \item Is it possible that this is not actually true? E.g., unless
+    $\veps=\poly(\abs{\cY}^{-1})$ or
+    $\beta^{-1}=\poly(\abs{\cY}^{-1})$, argmax can flip?
+  \end{itemize}
+  }
 
 
-Next, we observe that $x\mapsto{}\log^2(x)$ is concave over $x\geq{}e$,
-so that
-          \begin{align*}
-            &\sum_{y}(\pibar\ind{t}(y)+\pibar\ind{t+1}(y))
-            \log^2\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
-            &\leq          
-              \log^2\prn*{\sum_{y}\pibar\ind{t}(y)\frac{1}{\pibar\ind{t}(y)}\vee{}e}
-              +
-              \log^2\prn*{\sum_{y}\pibar\ind{t+1}(y)\frac{1}{\pibar\ind{t}(y)}\vee{}e}\\
-                        &\leq          
-              \log^2\prn*{e\sum_{y}\frac{\pibar\ind{t}(y)}{\pibar\ind{t}(y)}}
-                          +
-                          \log^2\prn*{e\sum_{y}\frac{\pibar\ind{t+1}(y)}{\pibar\ind{t}(y)}}\\
-            &\leq \log^2(e\abs{\cY}) +
-              \log^2(e\Cconc\abs{\cY}\alpha^{-1})
-              \leq{} 2e^2 \log^2(\Cconc\abs{\cY}\alpha^{-1})
-          \end{align*}
-          
-        \end{proof}
+\begin{lemma}
+  \label{lem:entropy_lower}
+  If $\ystar=\argmax_{y\in\cY}\pibar\ind{t}(y)$, then
+  \begin{align*}
+    H(\pibar\ind{t+1}) \geq \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    - \beta^{-2}\underbrace{e^2
+    \log^2(\Cconc\abs{\cY}\alpha^{-1})}_{\rdef{}C}
+    -\beta^{-1}\veps'.
+  \end{align*}
+  
+\end{lemma}
+\begin{proof}[\pfref{lem:entropy_lower}]
+  Applying \cref{lem:first_order} with $\pistar=\pibar\ind{t}$, we
+  have that
+  \begin{align*}
+    \Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}
+    \leq
+    \beta^{-1}\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t}-\pibar\ind{t+1}}
+    -\Dkl{\pibar\ind{t}}{\pibar\ind{t+1}} + \beta^{-1}\veps'
+    \leq{} \beta^{-2}C + \beta^{-1}\veps'
+    % \underbrace{e^2 \log^2(\Cconc\abs{\cY}\alpha^{-1})}_{\rdef{}C}
+  \end{align*}
+  by \cref{lem:err_bound}. We then note that
+  \begin{align*}
+    \Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}
+    &22= \sum_{y}\pibar\ind{t+1}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}
+    - H(\pibar\ind{t+1})\\
+    &\geq{} \sum_{y}\pibar\ind{t+1}(y)\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    - H(\pibar\ind{t+1})
+    =\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    - H(\pibar\ind{t+1})
+  \end{align*}
+  as long as $y\in\argmax_{y\in\cY}\pibar\ind{t}(y)$.
+\end{proof}
 
-        
+\begin{lemma}
+  \label{lem:entropy_log}
+  If $\ystar=\argmax_{y\in\cY}\pibar\ind{t}(y)$, then
+  \begin{align*}
+    \log\prn*{\frac{1}{\pibar\ind{t+1}(\ystar)}}
+    -    \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    \leq \beta^{-1}\prn*{H(\pibar\ind{t})-H(\pibar\ind{t+1})} + \beta^{-1}\veps'.
+  \end{align*}
+\end{lemma}
+\begin{proof}[\pfref{lem:entropy_log}]
+  From \cref{lem:first_order} with $\pistar=e_{\ystar}$, we have that
+  \begin{align*}
+    \log\prn*{\frac{1}{\pibar\ind{t+1}(\ystar)}}
+    -    \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    &\leq -
+    \beta^{-1}\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t+1}-e_{\ystar}}
+      -\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}} + \beta^{-1}\veps'\\
+        &\leq -
+    \beta^{-1}\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t+1}-e_{\ystar}}
+          +\beta^{-1}\veps'.
+  \end{align*}
+  We observe that
+  \begin{align*}
+    -\tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t+1}-e_{\ystar}}
+    &= \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    -
+    \sum_{y\in\cY}\pibar\ind{t+1}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
+    &= \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    -
+    \sum_{y\in\cY}\pibar\ind{t+1}(y)\log\prn*{\frac{1}{\pibar\ind{t+1}(y)}}
+    -
+      \sum_{y\in\cY}\pibar\ind{t+1}(y)\log\prn*{\frac{\pibar\ind{t+1}}{\pibar\ind{t}(y)}}\\
+    &\leq \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    -
+      H(\pibar\ind{t+1})
+      -  \Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}\\
+        &\leq \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    -
+      H(\pibar\ind{t+1}).
+  \end{align*}
+  Finally, we note that if
+  $\ystar\in\argmax_{y\in\cY}\pibar\ind{t}(y)$, then
+  \begin{align*}
+    \log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    =
+    \sum_{y}\pibar\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(\ystar)}}
+    \leq{}     \sum_{y}\pibar\ind{t}(y)\log\prn*{\frac{1}{\pibar\ind{t}(y)}}=H(\pibar\ind{t}).
+  \end{align*}
+  
+\end{proof}
+
   \end{proof}
 
   \begin{proof}[\pfref{lem:entropy_gradient}]
@@ -648,6 +727,52 @@ $\alpha\log(2\alpha^{-1})+\alpha\log\prn*{\abs{\cY}\alpha^{-1}}
           \end{align*}
           which proves the result.
 
+        \end{proof}
+
+                \begin{proof}[\pfref{lem:err_bound}]
+          We can write
+          \begin{align*}
+            \tri*{\grad{}H(\pibar\ind{t}),\pibar\ind{t}-\pibar\ind{t+1}}
+            &=
+            \sum_{y}(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))\log\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
+            &=
+\sum_{y}(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))\log\prn*{\frac{1}{\pibar\ind{t}(y)}}\cdot\frac{\sqrt{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}}{\sqrt{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}}\\
+            &\leq
+              \frac{\zeta}{2}\sum_{y}(\pibar\ind{t}(y)+\pibar\ind{t+1}(y))
+              \log^2\prn*{\frac{1}{\pibar\ind{t}(y)}}
+              +\frac{\zeta^{-1}}{2}
+              \sum_{y}\frac{(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))^2}{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}\\
+                        &\leq
+              \frac{\zeta}{2}\sum_{y}(\pibar\ind{t}(y)+\pibar\ind{t+1}(y))
+              \log^2\prn*{\frac{1}{\pibar\ind{t}(y)}}
+              +\zeta^{-1}\min\crl*{\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}, \Dkl{\pibar\ind{t}}{\pibar\ind{t+1}}}.
+          \end{align*}
+          where the last line uses that $
+          \sum_{y}\frac{(\pibar\ind{t}(y)-\pibar\ind{t+1}(y))^2}{\pibar\ind{t}(y)+\pibar\ind{t+1}(y)}
+          \leq 2
+          \sum_{y}(\sqrt{\pibar\ind{t}(y)}-\sqrt{\pibar\ind{t+1}(y)})^2=2\Dhels{\pibar\ind{t+1}}{\pibar\ind{t}}
+          \leq2\min\crl*{\Dkl{\pibar\ind{t+1}}{\pibar\ind{t}}, \Dkl{\pibar\ind{t}}{\pibar\ind{t+1}}}$.
+
+Next, we observe that $x\mapsto{}\log^2(x)$ is concave over $x\geq{}e$,
+so that
+          \begin{align*}
+            &\sum_{y}(\pibar\ind{t}(y)+\pibar\ind{t+1}(y))
+            \log^2\prn*{\frac{1}{\pibar\ind{t}(y)}}\\
+            &\leq          
+              \log^2\prn*{\sum_{y}\pibar\ind{t}(y)\frac{1}{\pibar\ind{t}(y)}\vee{}e}
+              +
+              \log^2\prn*{\sum_{y}\pibar\ind{t+1}(y)\frac{1}{\pibar\ind{t}(y)}\vee{}e}\\
+                        &\leq          
+              \log^2\prn*{e\sum_{y}\frac{\pibar\ind{t}(y)}{\pibar\ind{t}(y)}}
+                          +
+                          \log^2\prn*{e\sum_{y}\frac{\pibar\ind{t+1}(y)}{\pibar\ind{t}(y)}}\\
+            &\leq \log^2(e\abs{\cY}) +
+              \log^2(e\Cconc\abs{\cY}\alpha^{-1})
+              \leq{} 2e^2 \log^2(\Cconc\abs{\cY}\alpha^{-1})
+          \end{align*}
+
+
+          
         \end{proof}
 
 \begin{comment}
